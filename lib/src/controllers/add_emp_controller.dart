@@ -12,36 +12,37 @@ final CollectionReference _Collection =
 final _fireStore = FirebaseFirestore.instance;
 
 class AddEmployeeController {
-  Future<String> getEmployeeData() async {
+  Future<Map<String, dynamic>> getEmployeeData() async {
     QuerySnapshot querySnapshot =
         await _fireStore.collection(Strings.firebase_path).get();
 
     // Get data from docs and convert map to List
-    final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
-
-    log('$allData');
-    return '';
+    if (querySnapshot.docs.isNotEmpty) {
+      final allData = querySnapshot.docs.map((doc) => doc.data()).toList();
+      final Map<String, dynamic> response = {
+        "count": allData.length,
+        "data": allData
+      };
+      return response;
+    }
+    return {};
   }
 
-  Future<Response> addEmployee({
+  Future<int> addEmployee({
     required String name,
-    required String position,
     required String contact,
   }) async {
-    Response response = Response();
     DocumentReference documentReference = _Collection.doc();
+    log("Sterted this");
     Map<String, dynamic> data = <String, dynamic>{
-      "name": 'Rahul',
-      "contact": "263528736"
+      "name": name,
+      "contact": contact,
     };
-    await documentReference.set(data).whenComplete(() {
-      response.code = 200;
-      response.message = 'Successfullt Added';
-    }).catchError((e) {
-      response.code = 400;
-      response.message = "Cannot add due to error";
-    });
-
-    return response;
+    try {
+      await documentReference.set(data);
+      return 200;
+    } catch (e) {
+      return 400;
+    }
   }
 }
