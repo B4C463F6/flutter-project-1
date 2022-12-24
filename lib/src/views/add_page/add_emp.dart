@@ -16,29 +16,41 @@ class _AddEmployeeState extends State<AddEmployee> {
   final _controller = AddEmployeeController();
   final nameController = TextEditingController();
   final contactController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-  late Future _getAllData;
-  bool _loading = false;
-  bool _validContact = true;
-  bool _validName = true;
-  bool validateCell(phone) {
+
+  String? validateCell(phone) {
     // log(phone);
     final regex = RegExp(
         r'((\+*)((0[ -]*)*|((91 )*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}');
     // log('${regex.hasMatch(phone)}');
-    if (regex.hasMatch(phone)) {
-      return true;
-    } else {
-      return false;
+    if (regex.hasMatch(phone) && phone.length == 10) {
+      return null;
     }
+
+    return "Please Enter Valid Contact";
   }
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    _getAllData = _controller.getEmployeeData();
-    _controller.getEmployeeData();
-    super.initState();
+  String? isValidName(String name) {
+    if (name.isNotEmpty && name.length > 3) {
+      return null;
+    }
+    return "Please Enter proper Name";
+  }
+
+  void validateCode(BuildContext context) async {
+    final isAlreadyDataExists = await _controller.doesNameAlreadyExist(
+        nameController.text, contactController.text);
+    if (isAlreadyDataExists) {
+      nameController.clear();
+      contactController.clear();
+      return Navigator.pop(context);
+    }
+    final response = await _controller.addEmployee(
+        name: nameController.text, contact: contactController.text);
+    if (response == 200) {
+      nameController.clear();
+      contactController.clear();
+      return Navigator.pop(context);
+    }
   }
 
   @override
@@ -51,32 +63,33 @@ class _AddEmployeeState extends State<AddEmployee> {
           IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert)),
         ],
       ),
-      body: FutureBuilder(
-        future: _getAllData,
+      body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            const Center(
-                child: CircularProgressIndicator(
-              color: Colors.red,
-            ));
+          if (snapshot.hasError) {
+            return const Center(child: CircularProgressIndicator());
           }
-
-          final data = snapshot.data as Map<String, dynamic>;
-          return !_loading || data == null
-              ? ListView.builder(
-                  itemCount: data['count'],
-                  itemBuilder: (BuildContext context, int index) {
-                    return ListTile(
-                        leading: Icon(Icons.list),
-                        trailing: Text(
-                          data['data'][index]['name'],
-                          style: TextStyle(color: Colors.green, fontSize: 15),
-                        ),
-                        title: Text("List item"));
-                  },
-                )
-              : const Center(child: CircularProgressIndicator());
+          if (snapshot.hasData) {
+            final docs = snapshot.data!.docs;
+            return docs.isNotEmpty
+                ? ListView.builder(
+                    itemBuilder: (context, index) {
+                      final data = docs[index].data();
+                      return ListTile(
+                        title: Text(data['name']),
+                        subtitle: Text(data['contact']),
+                      );
+                    },
+                    itemCount: docs.length,
+                  )
+                : const Center(
+                    child: Text('No Data'),
+                  );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         },
+        stream: _controller.streamBuilderQuery,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -123,8 +136,7 @@ class _AddEmployeeState extends State<AddEmployee> {
                           labelText: 'Enter Name',
                           hintText: 'Enter Name',
                           prefixIcon: const Icon(Icons.person_add),
-                          errorText:
-                              _validName ? null : "Please Enter proper Name",
+                          errorText: isValidName(nameController.text),
                         ),
                       ),
                     ),
@@ -145,11 +157,7 @@ class _AddEmployeeState extends State<AddEmployee> {
                           ),
                           labelText: 'Enter Contact',
                           hintText: 'Enter Contact',
-                          errorText:
-                              // _validContact ? null : "Please Enter Valid Contact",
-                              _validContact
-                                  ? null
-                                  : "Please Enter Valid Contact",
+                          errorText: validateCell(contactController.text),
                           prefixIcon: const Icon(Icons.contact_phone_outlined),
                         ),
                       ),
@@ -165,30 +173,7 @@ class _AddEmployeeState extends State<AddEmployee> {
                         ),
                       ),
                       child: TextButton.icon(
-                        onPressed: () async {
-                          setState(() {
-                            _validName = nameController.text.isNotEmpty &&
-                                nameController.text.length > 3;
-                            _validContact =
-                                validateCell(contactController.text);
-                          });
-
-                          if (_validContact && _validName) {
-                            setState(() {
-                              _loading = true;
-                            });
-                            final response = await _controller.addEmployee(
-                              name: nameController.text,
-                              contact: contactController.text,
-                            );
-                            Navigator.pop(context);
-                            if (response == 200) {
-                              setState(() {
-                                _loading = false;
-                              });
-                            }
-                          }
-                        },
+                        onPressed: () => validateCode(context),
                         label: const Text(
                           style: TextStyle(color: Colors.white),
                           Strings.submit,

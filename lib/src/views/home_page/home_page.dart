@@ -1,6 +1,5 @@
 import 'package:firebase_crud/src/views/add_page/add_emp.dart';
 import 'package:firebase_crud/src/views/home_page/home/home_screen.dart';
-import 'package:firebase_crud/src/views/records_page/show_emp.dart';
 import 'package:flutter/material.dart';
 import '../../constants/strings.dart';
 
@@ -13,9 +12,8 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int index = 0;
-  final screens = [
+  final screens = const [
     HomeScreen(),
-    ShowRecords(),
     AddEmployee(),
   ];
   @override
@@ -46,11 +44,6 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(Icons.home),
                 selectedIcon: Icon(Icons.home_filled),
                 label: Strings.appHome,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.calendar_month_outlined),
-                selectedIcon: Icon(Icons.calendar_month),
-                label: Strings.empRecords,
               ),
               NavigationDestination(
                 icon: Icon(Icons.add_circle_outline),
