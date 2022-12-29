@@ -1,11 +1,15 @@
 import 'dart:developer';
 
-import 'package:firebase_crud/src/controllers/add_emp_controller.dart';
-import 'package:firebase_crud/src/models/employeeModel.dart';
+import 'package:firebase_crud/source/employeeProvider.dart';
+import 'package:provider/provider.dart';
+
+import 'employeeController.dart';
+import 'employeeModel.dart';
 import 'package:flutter/material.dart';
 
 class EmployeeItem extends StatefulWidget {
-  final Map<String, dynamic> data;
+  // final Map<String, dynamic> data;
+  final EmployeeModel data;
   const EmployeeItem({required this.data, super.key});
 
   @override
@@ -32,20 +36,16 @@ class _EmployeeItemState extends State<EmployeeItem> {
             Transform.scale(
               scale: 1.2,
               child: Checkbox(
-                value: _checkbox,
-                onChanged: (value) {
-                  employeeController.addEmployeeToselectedList(widget.data);
-                  setState(() {
-                    _checkbox = value as bool;
-                  });
-                },
+                value: widget.data.isChecked,
+                onChanged: (value) {},
               ),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.data['name'],
+                  // widget.data['name'],
+                  widget.data.name ?? '',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -56,7 +56,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                   height: 8,
                 ),
                 Text(
-                  widget.data['contact'],
+                  widget.data.contact ?? '',
                   style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
