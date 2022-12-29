@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crud/src/constants/strings.dart';
 import 'package:firebase_crud/src/controllers/add_emp_controller.dart';
@@ -17,21 +15,21 @@ class _AddEmployeeState extends State<AddEmployee> {
   final nameController = TextEditingController();
   final contactController = TextEditingController();
 
-  String? validateCell(phone) {
+  String validateCell(phone) {
     // log(phone);
     final regex = RegExp(
         r'((\+*)((0[ -]*)*|((91 )*))((\d{12})+|(\d{10})+))|\d{5}([- ]*)\d{6}');
     // log('${regex.hasMatch(phone)}');
     if (regex.hasMatch(phone) && phone.length == 10) {
-      return null;
+      return '';
     }
 
     return "Please Enter Valid Contact";
   }
 
-  String? isValidName(String name) {
+  String isValidName(String name) {
     if (name.isNotEmpty && name.length > 3) {
-      return null;
+      return '';
     }
     return "Please Enter proper Name";
   }

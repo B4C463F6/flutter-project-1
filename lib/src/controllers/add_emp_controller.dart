@@ -10,6 +10,8 @@ final CollectionReference _Collection =
 final _fireStore = FirebaseFirestore.instance;
 
 class AddEmployeeController {
+  final List<EmployeeModel> employeeList = [];
+
   final streamBuilderQuery =
       _fireStore.collection(Strings.firebase_path).snapshots();
   Future<int> addEmployee({
@@ -62,5 +64,13 @@ class AddEmployeeController {
       return true;
     }
     return false;
+  }
+
+  void addEmployeeToselectedList(Map<String, dynamic> empData) {
+    if (employeeList.contains(empData)) {
+      log("It is already done");
+    }
+    final employeedata = EmployeeModel.fromJson(empData);
+    employeeList.add(employeedata);
   }
 }

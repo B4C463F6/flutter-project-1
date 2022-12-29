@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
                 icon: Icon(Icons.add_circle_outline),
                 selectedIcon: Icon(Icons.add_circle),
                 label: Strings.addEmp,
-              )
+              ),
             ],
           ),
         ),

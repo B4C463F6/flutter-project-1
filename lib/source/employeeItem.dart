@@ -1,6 +1,8 @@
+import 'dart:developer';
+
+import 'package:firebase_crud/src/controllers/add_emp_controller.dart';
+import 'package:firebase_crud/src/models/employeeModel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 class EmployeeItem extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -12,15 +14,19 @@ class EmployeeItem extends StatefulWidget {
 
 class _EmployeeItemState extends State<EmployeeItem> {
   bool _checkbox = false;
+  final employeeController = AddEmployeeController();
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 1,
+      elevation: 0.2,
       child: Container(
         decoration: const BoxDecoration(
           color: Colors.white70,
+          borderRadius: BorderRadius.all(
+            Radius.circular(25),
+          ),
         ),
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         child: Row(
           children: [
             Transform.scale(
@@ -28,6 +34,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
               child: Checkbox(
                 value: _checkbox,
                 onChanged: (value) {
+                  employeeController.addEmployeeToselectedList(widget.data);
                   setState(() {
                     _checkbox = value as bool;
                   });
@@ -50,7 +57,7 @@ class _EmployeeItemState extends State<EmployeeItem> {
                 ),
                 Text(
                   widget.data['contact'],
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.grey,
                     fontSize: 12,
                   ),

@@ -1,24 +1,23 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_crud/src/models/employeeModel.dart';
-import 'package:firebase_crud/src/views/home_page/home/employee_item.dart';
+import 'package:firebase_crud/source/addemployeeform.dart';
+import 'employeeController.dart';
 import 'package:flutter/material.dart';
 
-import '../../../constants/strings.dart';
-import '../../../controllers/add_emp_controller.dart';
+import 'employeeItem.dart';
+import 'strings.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomePageState extends State<HomePage> {
   final _controller = AddEmployeeController();
-  late Future<List<EmployeeModel>?> _future;
-
+  bool _show = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,6 +84,36 @@ class _HomeScreenState extends State<HomeScreen> {
         },
         stream: _controller.streamBuilderQuery,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _show = !_show;
+          });
+        },
+        child: Icon(_show ? Icons.close : Icons.person_add_outlined),
+      ),
+      bottomSheet: _show
+          ? BottomSheet(
+              builder: (context) {
+                return Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(15),
+                      topRight: Radius.circular(15),
+                    ),
+                  ),
+                  child: const AddEmployeeForm(),
+                );
+              },
+              enableDrag: false,
+              onClosing: () {
+                log('closeddd');
+              },
+            )
+          : const SizedBox(),
     );
   }
 }
