@@ -25,6 +25,7 @@ class AddEmployeeController {
     Map<String, dynamic> data = <String, dynamic>{
       "name": name,
       "contact": contact,
+      "isChecked": false,
     };
     try {
       await documentReference.set(data);

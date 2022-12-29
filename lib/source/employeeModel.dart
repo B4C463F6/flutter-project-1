@@ -13,12 +13,12 @@ class EmployeeModel {
   String? contact;
 
   @JsonKey(name: 'isChecked')
-  bool? isChecked = false;
+  bool isChecked = false;
 
   EmployeeModel({
     this.name,
     this.contact,
-    this.isChecked,
+    required this.isChecked,
   });
 
   factory EmployeeModel.fromJson(Map<String, dynamic> json) =>

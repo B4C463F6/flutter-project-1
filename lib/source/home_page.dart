@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crud/source/addemployeeform.dart';
+import 'package:firebase_crud/source/employeeModel.dart';
 import 'package:firebase_crud/source/employeeProvider.dart';
 import 'package:provider/provider.dart';
 import 'employeeController.dart';
@@ -34,6 +35,13 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _loading = !_loading;
     });
+  }
+
+  void changeCheckedState(EmployeeModel data, bool value) {
+    Provider.of<EmployeeProvider>(
+      context,
+      listen: false,
+    ).updateIsChecked(data, value);
   }
 
   // void searchText(String value) {
@@ -104,14 +112,20 @@ class _HomePageState extends State<HomePage> {
                 }
                 return Consumer<EmployeeProvider>(
                   builder: (context, employeeProvider, child) {
-                    log("${employeeProvider.selectedEmp}");
+                    log("is this data :: ${employeeProvider.selectedEmp}");
+                    if (employeeProvider.employees.isEmpty) {
+                      return Text('no data');
+                    }
                     return Expanded(
-                      child: _loading || searchtextController.text.length > 2
+                      child: _loading
                           ? ListView.separated(
                               shrinkWrap: true,
                               itemBuilder: (context, index) {
                                 return EmployeeItem(
                                   data: employeeProvider.employees[index],
+                                  isChecked: employeeProvider
+                                      .employees[index].isChecked,
+                                  changecheckStatus: changeCheckedState,
                                 );
                               },
                               separatorBuilder: (context, index) {
@@ -126,6 +140,9 @@ class _HomePageState extends State<HomePage> {
                               itemBuilder: (context, index) {
                                 return EmployeeItem(
                                   data: employeeProvider.employeeList[index],
+                                  isChecked: employeeProvider
+                                      .employees[index].isChecked,
+                                  changecheckStatus: changeCheckedState,
                                 );
                               },
                               separatorBuilder: (context, index) {
@@ -225,9 +242,8 @@ class _HomePageState extends State<HomePage> {
           }
         },
         child: Provider.of<EmployeeProvider>(
-                  context,
-                ).selectedEmp.length >
-                1
+          context,
+        ).selectedEmp.isNotEmpty
             ? const Icon(Icons.arrow_upward)
             : Icon(_show ? Icons.close : Icons.person_add_outlined),
       ),

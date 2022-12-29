@@ -50,6 +50,17 @@ class EmployeeProvider extends ChangeNotifier {
     }
   }
 
+  void updateIsChecked(EmployeeModel emp, bool value) {
+    // final bool productExists = employeeList.any((p) => p.name == emp.name);
+    // log('podu  $productExists');
+    // if (productExists) {
+    employeeList[employeeList.indexWhere((element) => element.name == emp.name)]
+        .isChecked = value;
+
+    notifyListeners();
+    // }
+  }
+
   void filterEmployee({String searchText = ''}) {
     employeeSearch = searchText;
     notifyListeners();

@@ -10,14 +10,19 @@ import 'package:flutter/material.dart';
 class EmployeeItem extends StatefulWidget {
   // final Map<String, dynamic> data;
   final EmployeeModel data;
-  const EmployeeItem({required this.data, super.key});
+  final bool isChecked;
+  final Function changecheckStatus;
+  const EmployeeItem(
+      {required this.data,
+      required this.isChecked,
+      required this.changecheckStatus,
+      super.key});
 
   @override
   State<EmployeeItem> createState() => _EmployeeItemState();
 }
 
 class _EmployeeItemState extends State<EmployeeItem> {
-  bool _checkbox = false;
   final employeeController = AddEmployeeController();
   @override
   Widget build(BuildContext context) {
@@ -36,8 +41,21 @@ class _EmployeeItemState extends State<EmployeeItem> {
             Transform.scale(
               scale: 1.2,
               child: Checkbox(
-                value: widget.data.isChecked,
-                onChanged: (value) {},
+                value: widget.isChecked,
+                onChanged: (value) {
+                  setState(() {
+                    widget.changecheckStatus(widget.data, value);
+                  });
+                  !widget.isChecked
+                      ? Provider.of<EmployeeProvider>(
+                          context,
+                          listen: false,
+                        ).addEmployeeToSelectedList(widget.data)
+                      : Provider.of<EmployeeProvider>(
+                          context,
+                          listen: false,
+                        ).removeEmployeeFromSelectedList(widget.data);
+                },
               ),
             ),
             Column(
