@@ -2,11 +2,11 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_crud/source/employeeProvider.dart';
-import 'package:firebase_crud/src/constants/strings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 
 import 'employeeModel.dart';
+import 'strings.dart';
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 final CollectionReference _Collection =
